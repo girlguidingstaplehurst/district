@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: booking
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+        - name: booking
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: url
+                  name: db-url
+            - name: GOOGLE_CLIENT_ID
+              value: 362406102359-frmsjn6et0551pciju1li4mep62thmse.apps.googleusercontent.com
+            - name: SMTP_SERVER
+              value: "smtp.gmail.com"
+            - name: SMTP_USERNAME
+              value: "bookings@kathielambcentre.org"
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: smtp-password
+                  name: smtp-password
+            - name: GOOGLE_RECAPTCHA_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: recaptcha-secret
+                  name: recaptcha-secret
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://$(NODE_IP):4317

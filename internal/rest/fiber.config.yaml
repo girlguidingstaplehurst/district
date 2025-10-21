@@ -1,0 +1,6 @@
+package: rest
+output: fiber.gen.go
+generate:
+  fiber-server: true
+  embedded-spec: true
+  strict-server: true

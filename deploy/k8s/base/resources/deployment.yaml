@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: district
+  labels:
+    app: district
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: district
+  template:
+    metadata:
+      name: district
+      labels:
+        app: district
+    spec:
+      containers:
+        - name: district
+          image: ghcr.io/girlguidingstaplehurst/district
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: Always

@@ -1,0 +1,910 @@
+openapi: 3.0.3
+info:
+  title: Booking System API
+  description: |-
+    TODO
+  license:
+    name: GNU Affero GPL 3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.en.html
+  version: 1.0.0
+tags:
+  - name: public
+    description: Public REST APIs
+  - name: admin
+    description: Private Administration REST APIs
+paths:
+  /api/v1/add-event:
+    post:
+      tags:
+        - public
+      summary: Add an event
+      description: Add a new event to the calendar
+      operationId: addEvent
+      requestBody:
+        description: Event to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewEvent'
+        required: true
+      responses:
+        '200':
+          description: Successfully added
+        '409':
+          description: Another event exists on this date
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/events:
+    get:
+      tags:
+        - public
+      parameters:
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date
+          description: The date to obtain events from
+        - in: query
+          name: to
+          schema:
+            type: string
+            format: date
+          description: The date to obtain events to
+      responses:
+        '200':
+          description: "Zero or more events exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventList'
+        '400':
+          description: Request parameters are invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/events.ics:
+    get:
+      operationId: getEventsICS
+      tags:
+        - public
+      responses:
+        '200':
+          description: "Zero or more events exist"
+          content:
+            text/calendar: {}
+        '400':
+          description: Request parameters are invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/admin/events:
+    get:
+      security:
+        - admin_auth: [ ]
+      tags:
+        - admin
+      parameters:
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date
+          description: The date to obtain events from
+        - in: query
+          name: to
+          schema:
+            type: string
+            format: date
+          description: The date to obtain events to
+        - in: query
+          name: contact
+          schema:
+            type: string
+          description: Optional filter to events for a specific contact. Value is the contact's email.
+      responses:
+        '200':
+          description: "Zero or more events exist"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminEventList'
+        '400':
+          description: Request parameters are invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/admin/events/{eventID}:
+    get:
+      security:
+        - admin_auth: [ ]
+      tags:
+        - admin
+      parameters:
+        - in: path
+          name: eventID
+          schema:
+            type: string
+          description: The ID of the event to retrieve
+      responses:
+        '200':
+          description: "Event exists"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '404':
+          description: "No event exists with that ID"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/admin/invoices/for-events:
+    get:
+      security:
+        - admin_auth: [ ]
+      tags:
+        - admin
+      operationId: adminGetInvoicesForEvents
+      parameters:
+        - in: query
+          required: true
+          name: events
+          schema:
+            type: array
+            items:
+              type: string
+          description: A comma-separated list of events to generate invoices for
+      responses:
+        '200':
+          description: "Invoice sent successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceEvents'
+        '404':
+          description: "No event exists with that ID"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/admin/invoices/by-id/{invoiceID}:
+    get:
+      security:
+        - admin_auth: [ ]
+      tags:
+        - admin
+      operationId: adminGetInvoiceByID
+      parameters:
+        - in: path
+          name: invoiceID
+          schema:
+            type: string
+          description: The ID of the Invoice to retrieve
+      responses:
+        '200':
+          description: "Invoice found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '404':
+          description: "No invoice exists with that ID"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/admin/send-invoice:
+    post:
+      security:
+        - admin_auth: [ ]
+      tags:
+        - admin
+      operationId: adminSendInvoice
+      requestBody:
+        description: Invoice to send
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendInvoiceBody'
+        required: true
+      responses:
+        '200':
+          description: "Invoice sent successfully"
+        '404':
+          description: "No event exists with that ID"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/admin/invoices/by-id/{invoiceID}/mark-as-paid:
+    post:
+      security:
+        - admin_auth: [ ]
+      tags:
+        - admin
+      operationId: adminMarkInvoicePaid
+      parameters:
+        - in: path
+          name: invoiceID
+          schema:
+            type: string
+          description: The ID of the Invoice to mark as paid
+      responses:
+        '200':
+          description: "Invoice marked as paid successfully"
+        '404':
+          description: "No invoice exists with that ID"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/admin/rates:
+    get:
+      security:
+        - admin_auth: [ ]
+      tags:
+        - admin
+      operationId: adminGetRates
+      responses:
+        '200':
+          description: "Rates list"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RatesList'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/admin/events/{eventID}/set-rate:
+    post:
+      operationId: adminEventSetRate
+      security:
+        - admin_auth: [ ]
+      tags:
+        - admin
+      parameters:
+        - in: path
+          name: eventID
+          schema:
+            type: string
+          description: The ID of the event to set the rate on
+      requestBody:
+        description: Rate to be set
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetRateBody'
+        required: true
+      responses:
+        '200':
+          description: "Event updated"
+        '404':
+          description: "No event exists with that ID"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/admin/events/{eventID}/request-documents:
+    post:
+      operationId: adminEventRequestDocuments
+      security:
+        - admin_auth: [ ]
+      tags:
+        - admin
+      parameters:
+        - in: path
+          name: eventID
+          schema:
+            type: string
+          description: The ID of the event to request documents for
+      requestBody:
+        description: Documents to be requested
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestDocumentsBody'
+        required: true
+      responses:
+        '200':
+          description: "Documents requested"
+        '404':
+          description: "No event exists with that ID"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/admin/events/{eventID}/cancel-event:
+    post:
+      operationId: adminEventCancel
+      security:
+        - admin_auth: [ ]
+      tags:
+        - admin
+      parameters:
+        - in: path
+          name: eventID
+          schema:
+            type: string
+          description: The ID of the event to cancel
+      responses:
+        '200':
+          description: "Event Cancelled"
+        '404':
+          description: "No event exists with that ID"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/admin/events/{eventID}/approve-event:
+    post:
+      operationId: adminEventApprove
+      security:
+        - admin_auth: [ ]
+      tags:
+        - admin
+      parameters:
+        - in: path
+          name: eventID
+          schema:
+            type: string
+          description: The ID of the event to approve
+      responses:
+        '200':
+          description: "Event Approved"
+        '404':
+          description: "No event exists with that ID"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/admin/add-events:
+    post:
+      security:
+        - admin_auth: [ ]
+      summary: Add events
+      description: Add new events to the calendar
+      operationId: adminAddEvents
+      requestBody:
+        description: Events to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminNewEvents'
+        required: true
+      responses:
+        '200':
+          description: Successfully added
+        '409':
+          description: One or more conflicts exist
+#          TODO this should be a partial response, I suspect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation exception
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - error_message
+      properties:
+        error_message:
+          type: string
+    NewEvent:
+      type: object
+      required:
+        - event
+        - contact
+        - captchaToken
+        - privacyPolicy
+        - termsOfHire
+        - cleaningAndDamage
+        - carParking
+        - adhesives
+      properties:
+        event:
+          $ref: "#/components/schemas/EventDetails"
+        contact:
+          $ref: "#/components/schemas/Contact"
+        captchaToken:
+          type: string
+        privacyPolicy:
+          type: boolean
+        termsOfHire:
+          type: boolean
+        cleaningAndDamage:
+          type: boolean
+        carParking:
+          type: boolean
+        adhesives:
+          type: boolean
+    EventDetails:
+      type: object
+      required:
+        - name
+        - details
+        - from
+        - to
+        - publicly_visible
+      properties:
+        name:
+          type: string
+        details:
+          type: string
+        from:
+          type: string
+          format: datetime
+        to:
+          type: string
+          format: datetime
+        publicly_visible:
+          type: boolean
+          default: true
+    Contact:
+      type: object
+      required:
+        - name
+        - email_address
+      properties:
+        name:
+          type: string
+        email_address:
+          type: string
+          format: email
+    EventStatus:
+      type: string
+      enum: [ provisional, "awaiting documents", approved, cancelled ]
+    EventList:
+      type: object
+      required:
+        - events
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListEvent'
+    ListEvent:
+      type: object
+      required:
+        - id
+        - name
+        - from
+        - to
+        - status
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        from:
+          type: string
+          format: datetime
+        to:
+          type: string
+          format: datetime
+        status:
+          $ref: '#/components/schemas/EventStatus'
+    AdminEventList:
+      type: object
+      required:
+        - events
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+    Event:
+      type: object
+      required:
+        - id
+        - name
+        - details
+        - from
+        - to
+        - status
+        - visible
+        - contact
+        - email
+        - rateID
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        details:
+          type: string
+        from:
+          type: string
+          format: datetime
+        to:
+          type: string
+          format: datetime
+        status:
+          $ref: '#/components/schemas/EventStatus'
+        visible:
+          type: boolean
+        contact:
+          type: string
+        email:
+          type: string
+          format: email
+        assignee:
+          type: string
+          format: email
+        keyholderIn:
+          type: string
+          format: email
+        keyholderOut:
+          type: string
+          format: email
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceRef'
+        rateID:
+          type: string
+    SendInvoiceBody:
+      type: object
+      required:
+        - contact
+        - items
+      properties:
+        contact:
+          type: string
+          format: email
+        events:
+          type: array
+          description: List of Event IDs that this invoice applies to.
+          items:
+            type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SendInvoiceBodyItem'
+    SendInvoiceBodyItem:
+      type: object
+      required:
+        - cost
+        - description
+      properties:
+        description:
+          type: string
+        cost:
+          type: number
+        eventID:
+          type: string
+    InvoiceEvents:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          $ref: '#/components/schemas/InvoiceEvent'
+    InvoiceEvent:
+      type: object
+      required:
+        - id
+        - name
+        - from
+        - to
+        - status
+        - rate
+        - discountTable
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        from:
+          type: string
+          format: datetime
+        to:
+          type: string
+          format: datetime
+        status:
+          $ref: '#/components/schemas/EventStatus'
+        rate:
+          type: number
+        discountTable:
+          $ref: '#/components/schemas/DiscountTable'
+    DiscountTable:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/DiscountTableRow'
+    DiscountTableRow:
+      type: object
+      required:
+        - type
+        - value
+      properties:
+        type:
+          type: string
+          enum: [flat]
+        value:
+          type: number
+    InvoiceRef:
+      type: object
+      required:
+        - id
+        - reference
+        - status
+      properties:
+        id:
+          type: string
+        reference:
+          type: string
+        status:
+          $ref: '#/components/schemas/InvoiceStatus'
+        paid:
+          type: string
+          format: datetime
+        sent:
+          type: string
+          format: datetime
+    InvoiceStatus:
+      type: string
+      enum: [ raised, paid, cancelled ]
+    Invoice:
+      type: object
+      required:
+        - id
+        - reference
+        - status
+        - contact
+        - items
+      properties:
+        id:
+          type: string
+        reference:
+          type: string
+        sent:
+          type: string
+          format: datetime
+        paid:
+          type: string
+          format: datetime
+        status:
+          $ref: "#/components/schemas/InvoiceStatus"
+        contact:
+          type: string
+          format: email
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceItem'
+    InvoiceItem:
+      type: object
+      required:
+        - cost
+        - description
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        cost:
+          type: number
+        eventID:
+          type: string
+    RatesList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Rate'
+    Rate:
+      type: object
+      required:
+        - id
+        - description
+        - hourlyRate
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        hourlyRate:
+          type: number
+        discountTable:
+          type: object
+    SetRateBody:
+      type: object
+      required:
+        - rate
+      properties:
+        rate:
+          type: string
+    RequestDocumentsBody:
+      type: object
+      required:
+        - publicLiability
+        - foodSafety
+        - riskAssessment
+        - coshhSheets
+        - dbsCertificate
+      properties:
+        publicLiability:
+          type: boolean
+        foodSafety:
+          type: boolean
+        riskAssessment:
+          type: boolean
+        coshhSheets:
+          type: boolean
+        dbsCertificate:
+          type: boolean
+    AdminNewEvents:
+      type: object
+      required:
+        - event
+        - contact
+      properties:
+        event:
+          type: object
+          required:
+            - name
+            - details
+            - instances
+            - publicly_visible
+            - status
+            - rate
+          properties:
+            name:
+              type: string
+            details:
+              type: string
+            instances:
+              type: array
+              items:
+                $ref: '#/components/schemas/EventInstance'
+            publicly_visible:
+              type: boolean
+              default: true
+            status:
+              type: string
+            rate:
+              type: string
+        contact:
+          type: object
+          required:
+            - name
+            - email_address
+          properties:
+            name:
+              type: string
+            email_address:
+              type: string
+              format: email
+    EventInstance:
+      type: object
+      required:
+        - from
+        - to
+      properties:
+        from:
+          type: string
+          format: datetime
+        to:
+          type: string
+          format: datetime
+  securitySchemes:
+    admin_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

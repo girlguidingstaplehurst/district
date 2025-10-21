@@ -1,0 +1,4 @@
+package: rest
+output: models.gen.go
+generate:
+  models: true

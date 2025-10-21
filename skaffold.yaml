@@ -1,0 +1,38 @@
+apiVersion: skaffold/v4beta9
+kind: Config
+metadata:
+  name: booking
+build:
+  artifacts:
+    - image: ghcr.io/girlguidingstaplehurst/booking
+      ko:
+        main: ./cmd/district
+        dependencies:
+          paths:
+            - build
+            - cmd
+            - db
+            - deploy
+            - internal
+            - go.mod
+            - go.sum
+
+manifests:
+  kustomize:
+    paths:
+      - deploy/k8s/local
+
+deploy:
+  tolerateFailuresUntilDeadline: true
+
+portForward:
+  - namespace: district
+    resourceType: service
+    resourceName: district
+    port: 80
+    localPort: 8080
+  - namespace: district
+    resourceType: service
+    resourceName: postgres
+    port: 5432
+    localPort: 5432

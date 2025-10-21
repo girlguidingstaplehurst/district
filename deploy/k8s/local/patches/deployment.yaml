@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: district
+spec:
+  template:
+    spec:
+      containers:
+        - name: district
+          env:
+            - name: CAPTCHA_ARMED
+              value: "false"
+            - name: DATABASE_URL
+              value: postgresql://postgres:password@postgres.district.svc.cluster.local:5432/postgres?sslmode=disable
