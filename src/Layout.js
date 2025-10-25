@@ -51,12 +51,16 @@ function NavInDrawer() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
 
+  const { pathname } = useLocation();
+  const theme = pathname === "/" ? "brand" : pathname.split("-")[1];
   const [brand900] = useToken("colors", ["brand.900"]);
+
+  const image = pathname === "/" ? "/logo192.png" : `${pathname}-192.png`;
 
   return (
     <>
       <Flex gap={4} direction="column" align="center">
-        <Image src="/logo192.png" boxSize="192px" />
+        <Image src={image} boxSize="192px" />
         <ButtonGroup>
           <IconButton
             icon={<TbMenu2 />}
@@ -81,11 +85,11 @@ function NavInDrawer() {
               divider={<StackDivider borderTop={`1px solid ${brand900}`} />}
             >
               <DrawerLink label="Home" to="/" onClick={onClose} />
-              <DrawerLink label="About" to="/about" onClick={onClose} />
-              <DrawerLink label="Rainbows" to="/rainbows" onClick={onClose} />
-              <DrawerLink label="Brownies" to="/brownies" onClick={onClose} />
-              <DrawerLink label="Guides" to="/guides" onClick={onClose} />
-              <DrawerLink label="Rangers" to="/rangers" onClick={onClose} />
+              <DrawerLink to="/2nd-rainbows" label="2nd Rainbows" onClick={onClose}/>
+              <DrawerLink to="/1st-brownies" label="1st Brownies" onClick={onClose}/>
+              <DrawerLink to="/4th-brownies" label="4th Brownies" onClick={onClose}/>
+              <DrawerLink to="/1st-guides" label="1st Guides" onClick={onClose}/>
+              <DrawerLink to="/1st-rangers" label="1st Rangers" onClick={onClose}/>
             </Stack>
           </DrawerBody>
 
@@ -182,13 +186,13 @@ function Layout() {
     <>
       <div id="top"></div>
       <Box bg={brand900} color="white">
-        <Container maxW="4xl" padding={4}>
+        <Container maxW="6xl" padding={4}>
           {navInDrawer ? <NavInDrawer /> : <TopNav />}
         </Container>
       </Box>
       <Box>
         <Outlet />
-        <Container maxW="4xl" padding={4}>
+        <Container maxW="6xl" padding={4}>
           <Box margin={8} textAlign="center">
             <RoundedButton as="a" href="#top">
               Back to top

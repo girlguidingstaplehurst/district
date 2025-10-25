@@ -51,7 +51,7 @@ function ManagedContent({ name, showLastUpdated = true, theme }) {
       [BLOCKS.EMBEDDED_ASSET]: (node, children) => {
         console.log(node, children);
         return (
-          <Container maxW="5xl">
+          <Container maxW="6xl">
             <Image
               objectFit="contain"
               src={node.data.target.fields.file.url}
@@ -66,7 +66,7 @@ function ManagedContent({ name, showLastUpdated = true, theme }) {
             console.log("Slideshow", node.data.target.fields);
             return (
               <Box bg={`${theme}.500`}>
-                <Container maxW="5xl">
+                <Container maxW="6xl">
                   <Carousel images={node.data.target.fields.images} />
                 </Container>
               </Box>
@@ -76,42 +76,42 @@ function ManagedContent({ name, showLastUpdated = true, theme }) {
         }
       },
       [BLOCKS.HEADING_2]: (node, children) => (
-        <Container maxW="4xl">
+        <Container maxW="6xl">
           <Heading size="lg" color={`${theme}.500`}>
             {children}
           </Heading>
         </Container>
       ),
       [BLOCKS.HEADING_3]: (node, children) => (
-        <Container maxW="4xl">
+        <Container maxW="6xl">
           <Heading size="md" color={`${theme}.500`}>
             {children}
           </Heading>
         </Container>
       ),
       [BLOCKS.HEADING_4]: (node, children) => (
-        <Container maxW="4xl">
+        <Container maxW="6xl">
           <Heading size="sm" color={`${theme}.500`}>
             {children}
           </Heading>
         </Container>
       ),
       [BLOCKS.HEADING_5]: (node, children) => (
-        <Container maxW="4xl">
+        <Container maxW="6xl">
           <Heading size="xs" color={`${theme}.500`}>
             {children}
           </Heading>
         </Container>
       ),
       [BLOCKS.HEADING_6]: (node, children) => (
-        <Container maxW="4xl">
+        <Container maxW="6xl">
           <Heading size="xs" color={`${theme}.500`}>
             {children}
           </Heading>
         </Container>
       ),
       [BLOCKS.PARAGRAPH]: (node, children) => (
-        <Container maxW="4xl">
+        <Container maxW="6xl">
           <Text>{children}</Text>
         </Container>
       ),
@@ -133,7 +133,7 @@ function ManagedContent({ name, showLastUpdated = true, theme }) {
   return (
     <Skeleton isLoaded={loaded}>
       <Stack gap={4}>
-        <Container maxW="4xl" padding={4}>
+        <Container maxW="6xl" padding={4}>
           <Heading color={`${theme}.500`}>{content.fields?.heading}</Heading>
           {showLastUpdated ? (
             <Text>Last updated {dayjs(content.sys?.updatedAt).toString()}</Text>

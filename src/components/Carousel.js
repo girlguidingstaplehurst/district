@@ -2,12 +2,14 @@ import React from "react";
 import {
   Box,
   IconButton,
+  useBreakpoint,
   useBreakpointValue,
   useToken,
 } from "@chakra-ui/react"; // Here we have used react-icons package for the icons
 // And react-slick as our Carousel Lib
 import Slider from "react-slick";
-import { TbArrowLeft, TbArrowRight } from "react-icons/tb"; // Settings for the slider
+import { TbArrowLeft, TbArrowRight } from "react-icons/tb";
+import { useLocation } from "react-router-dom"; // Settings for the slider
 
 // Settings for the slider
 const settings = {
@@ -27,11 +29,14 @@ export default function Carousel({ images }) {
   // change the state
   const [slider, setSlider] = React.useState(null);
 
+  const { pathname } = useLocation();
+  const theme = pathname === "/" ? "brand" : pathname.split("-")[1];
+  const [brand900, white] = useToken("colors", [`${theme}.900`, "white"]);
+
   // These are the breakpoints which changes the position of the
   // buttons as the screen size changes
   const top = useBreakpointValue({ base: "90%", md: "50%" });
   const side = useBreakpointValue({ base: "30%", md: "10px" });
-  const [brand900, white] = useToken("colors", ["brand.900", "white"]);
 
   // These are the images used in the slide
   return (
@@ -56,7 +61,7 @@ export default function Carousel({ images }) {
       {/* Left Icon */}
       <IconButton
         aria-label="left-arrow"
-        bg="brand.900"
+        bg={brand900}
         color="white"
         borderRadius="full"
         position="absolute"
@@ -76,7 +81,7 @@ export default function Carousel({ images }) {
       {/* Right Icon */}
       <IconButton
         aria-label="right-arrow"
-        bg="brand.900"
+        bg={brand900}
         color="white"
         borderRadius="full"
         position="absolute"
