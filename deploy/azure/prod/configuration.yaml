@@ -14,7 +14,7 @@ properties:
             value: http/protobuf
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
             value: https://api.honeycomb.io
-        image: ghcr.io/girlguidingstaplehurst/district:v0.2.4
+        image: ghcr.io/girlguidingstaplehurst/district:v0.3.0
         imagePullPolicy: IfNotPresent
         name: district
         ports:
