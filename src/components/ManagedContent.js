@@ -96,6 +96,20 @@ function ManagedContent({ name, showLastUpdated = true, theme }) {
           </Heading>
         </Container>
       ),
+      [BLOCKS.HEADING_5]: (node, children) => (
+        <Container maxW="4xl">
+          <Heading size="xs" color={`${theme}.500`}>
+            {children}
+          </Heading>
+        </Container>
+      ),
+      [BLOCKS.HEADING_6]: (node, children) => (
+        <Container maxW="4xl">
+          <Heading size="xs" color={`${theme}.500`}>
+            {children}
+          </Heading>
+        </Container>
+      ),
       [BLOCKS.PARAGRAPH]: (node, children) => (
         <Container maxW="4xl">
           <Text>{children}</Text>
