@@ -28,7 +28,7 @@ properties:
             value: https://api.honeycomb.io
           - name: OTEL_EXPORTER_OTLP_HEADERS
             secretRef: honeycomb-otlp-header
-        image: ghcr.io/girlguidingstaplehurst/district:v0.2.1
+        image: ghcr.io/girlguidingstaplehurst/district:v0.2.2
         imagePullPolicy: IfNotPresent
         name: district
         ports:
