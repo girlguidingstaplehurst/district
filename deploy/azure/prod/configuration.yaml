@@ -8,27 +8,13 @@ properties:
   template:
     containers:
       - env:
-#          - name: DATABASE_URL
-#            secretRef: db-url
-#          - name: GOOGLE_CLIENT_ID
-#            value: 362406102359-frmsjn6et0551pciju1li4mep62thmse.apps.googleusercontent.com
-#          - name: SMTP_SERVER
-#            value: smtp.gmail.com
-#          - name: SMTP_USERNAME
-#            value: bookings@kathielambcentre.org
-#          - name: SMTP_PASSWORD
-#            secretRef: smtp-password
-#          - name: GOOGLE_RECAPTCHA_SECRET
-#            secretRef: google-recaptcha-secret
           - name: OTEL_SERVICE_NAME
             value: district
           - name: OTEL_EXPORTER_OTLP_PROTOCOL
             value: http/protobuf
           - name: OTEL_EXPORTER_OTLP_ENDPOINT
             value: https://api.honeycomb.io
-#          - name: OTEL_EXPORTER_OTLP_HEADERS
-#            secretRef: honeycomb-otlp-header
-        image: ghcr.io/girlguidingstaplehurst/district:v0.2.2
+        image: ghcr.io/girlguidingstaplehurst/district:v0.2.3
         imagePullPolicy: IfNotPresent
         name: district
         ports:
