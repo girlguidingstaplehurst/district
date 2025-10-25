@@ -1,17 +1,16 @@
 apiVersion: skaffold/v4beta9
 kind: Config
 metadata:
-  name: booking
+  name: district
 build:
   artifacts:
-    - image: ghcr.io/girlguidingstaplehurst/booking
+    - image: ghcr.io/girlguidingstaplehurst/district
       ko:
         main: ./cmd/district
         dependencies:
           paths:
             - build
             - cmd
-            - db
             - deploy
             - internal
             - go.mod

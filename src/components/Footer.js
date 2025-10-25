@@ -42,61 +42,33 @@ function Footer() {
             <GridItem>
               <Stack gap={4}>
                 <Link as={ReactRouterLink} to="/">
-                  <Heading size="sm">Kathie Lamb Guide Centre</Heading>
-                </Link>
-                <Link as={ReactRouterLink} to="/about">
-                  About
-                </Link>
-                <Link as={ReactRouterLink} to="/contact">
-                  Contact Us
-                </Link>
-                {/*<Link as={ReactRouterLink} to="/booking">*/}
-                {/*  Booking*/}
-                {/*</Link>*/}
-                <Link as={ReactRouterLink} to="/privacy-policy">
-                  Privacy Policy
-                </Link>
-                <Link as={ReactRouterLink} to="/terms-of-hire">
-                  Terms of Hire
-                </Link>
-                <Link as={ReactRouterLink} to="/cleaning-and-damage-policy">
-                  Cleaning and Damage Policy
-                </Link>
-                {/*<Link as={ReactRouterLink} to="/whats-on">*/}
-                {/*  What's On?*/}
-                {/*</Link>*/}
-                <Link as={ReactRouterLink} to="/location/">
-                  Location
-                </Link>
-              </Stack>
-            </GridItem>
-            <GridItem>
-              <Stack gap={4}>
-                <Link href="https://staplehurstguiding.org.uk/">
                   <Heading size="sm">Girlguiding Staplehurst District</Heading>
                 </Link>
-                <Link href="https://staplehurstguiding.org.uk/about-us">
-                  About Us
+                <Link as={ReactRouterLink} to="2nd-rainbows">
+                  2nd Rainbows
                 </Link>
-                <Link href="https://staplehurstguiding.org.uk/rainbows">
-                  Rainbows
+                <Link as={ReactRouterLink} to="1st-brownies">
+                  1st Brownies
                 </Link>
-                <Link href="https://staplehurstguiding.org.uk/brownies">
-                  Brownies
+                <Link as={ReactRouterLink} to="4th-brownies">
+                  4th Brownies
                 </Link>
-                <Link href="https://staplehurstguiding.org.uk/guides">
-                  Guides
+                <Link as={ReactRouterLink} to="1st-guides">
+                  1st Guides
                 </Link>
-                <Link href="https://staplehurstguiding.org.uk/rangers">
-                  Rangers
+                <Link as={ReactRouterLink} to="1st-rangers">
+                  1st Rangers
+                </Link>
+                <Link href="https://kathielambcentre.org/">
+                  <Heading size="sm">Kathie Lamb Guide Centre</Heading>
                 </Link>
               </Stack>
             </GridItem>
           </Grid>
         </Stack>
         <Text fontSize={12} align="center">
-          &copy; {new Date().getFullYear()} Girlguiding Staplehurst District. Registered Charity
-          801848
+          &copy; {new Date().getFullYear()} Girlguiding Staplehurst District.
+          Registered Charity 801848
         </Text>
       </Container>
     </Box>

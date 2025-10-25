@@ -82,10 +82,10 @@ function NavInDrawer() {
             >
               <DrawerLink label="Home" to="/" onClick={onClose} />
               <DrawerLink label="About" to="/about" onClick={onClose} />
-              <DrawerLink label="Contact Us" to="/contact" onClick={onClose} />
-              {/*<DrawerLink label="Booking" to="/booking" onClick={onClose} />*/}
-              {/*<DrawerLink label="What's On?" to="/whats-on" onClick={onClose} />*/}
-              <DrawerLink label="Location" to="/location" onClick={onClose} />
+              <DrawerLink label="Rainbows" to="/rainbows" onClick={onClose} />
+              <DrawerLink label="Brownies" to="/brownies" onClick={onClose} />
+              <DrawerLink label="Guides" to="/guides" onClick={onClose} />
+              <DrawerLink label="Rangers" to="/rangers" onClick={onClose} />
             </Stack>
           </DrawerBody>
 
@@ -100,13 +100,14 @@ function NavInDrawer() {
 
 function MenuLink({ label, children, to, ...props }) {
   const { pathname } = useLocation();
-  const [brand500, brand900, white] = useToken("colors", [
-    "brand.500",
-    "brand.900",
-    "white",
+  const theme = pathname === "/" ? "brand" : pathname.split("-")[1];
+  const [brand300, brand500, brand900] = useToken("colors", [
+    `${theme}.300`,
+    `${theme}.500`,
+    `${theme}.900`,
   ]);
 
-  const linkColor = pathname === to ? brand500 : white;
+  const linkColor = pathname === to ? brand500 : brand300;
 
   return (
     <Link
@@ -120,7 +121,7 @@ function MenuLink({ label, children, to, ...props }) {
       color={linkColor}
       borderTopRadius={3}
       _hover={{
-        bg: white,
+        bg: brand900,
         color: brand500,
         borderTop: `3px solid ${brand500}`,
       }}
@@ -132,7 +133,11 @@ function MenuLink({ label, children, to, ...props }) {
 }
 
 function TopNav() {
-  const [brand500] = useToken("colors", ["brand.500"]);
+  const { pathname } = useLocation();
+  const theme = pathname === "/" ? "brand" : pathname.split("-")[1];
+  const [brand500] = useToken("colors", [`${theme}.500`]);
+
+  const image = pathname === "/" ? "/logo192.png" : `${pathname}-192.png`;
 
   return (
     <Flex
@@ -143,7 +148,7 @@ function TopNav() {
       alignContent="end"
       wrap="wrap"
     >
-      <Image src="/logo192.png" />
+      <Image src={image} />
       <Flex flexDirection="column" flex={1}>
         <Spacer />
         <Stack
@@ -154,11 +159,11 @@ function TopNav() {
           alignContent="end"
         >
           <MenuLink to="/" label="Home" />
-          <MenuLink to="/about" label="About" />
-          <MenuLink to="/contact" label="Contact Us" />
-          {/*<MenuLink to="/booking" label="Booking" />*/}
-          {/*<MenuLink to="/whats-on" label="What's On?" />*/}
-          <MenuLink to="/location" label="Location" />
+          <MenuLink to="/2nd-rainbows" label="2nd Rainbows" />
+          <MenuLink to="/1st-brownies" label="1st Brownies" />
+          <MenuLink to="/4th-brownies" label="4th Brownies" />
+          <MenuLink to="/1st-guides" label="1st Guides" />
+          <MenuLink to="/1st-rangers" label="1st Rangers" />
         </Stack>
       </Flex>
     </Flex>
@@ -166,13 +171,17 @@ function TopNav() {
 }
 
 function Layout() {
+  const { pathname } = useLocation();
   const breakpoint = useBreakpoint({ ssr: false });
   const navInDrawer = breakpoint === "base" || breakpoint === "sm";
+
+  const theme = pathname === "/" ? "brand" : pathname.split("-")[1];
+  const [brand900] = useToken("colors", [`${theme}.900`]);
 
   return (
     <>
       <div id="top"></div>
-      <Box bg="brand.900" color="white">
+      <Box bg={brand900} color="white">
         <Container maxW="4xl" padding={4}>
           {navInDrawer ? <NavInDrawer /> : <TopNav />}
         </Container>

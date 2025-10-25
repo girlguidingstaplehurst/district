@@ -23,14 +23,14 @@ const client = contentful.createClient({
   accessToken: "mnamX4N0qebOgpJN6KJVgakUGcSLFrFEvcHhdtcEO14",
 });
 
-function ManagedContent({ name, showLastUpdated = true }) {
+function ManagedContent({ name, showLastUpdated = true, theme }) {
   const [content, setContent] = useState({});
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const getContent = async () => {
       const entry = await client.getEntries({
-        content_type: "klgcPage",
+        content_type: "districtPage",
         limit: 1,
         "fields.name": name,
       });
@@ -65,7 +65,7 @@ function ManagedContent({ name, showLastUpdated = true }) {
           case "slideshow":
             console.log("Slideshow", node.data.target.fields);
             return (
-              <Box bg="brand.500">
+              <Box bg={`${theme}.500`}>
                 <Container maxW="5xl">
                   <Carousel images={node.data.target.fields.images} />
                 </Container>
@@ -77,17 +77,23 @@ function ManagedContent({ name, showLastUpdated = true }) {
       },
       [BLOCKS.HEADING_2]: (node, children) => (
         <Container maxW="4xl">
-          <Heading size="lg">{children}</Heading>
+          <Heading size="lg" color={`${theme}.500`}>
+            {children}
+          </Heading>
         </Container>
       ),
       [BLOCKS.HEADING_3]: (node, children) => (
         <Container maxW="4xl">
-          <Heading size="md">{children}</Heading>
+          <Heading size="md" color={`${theme}.500`}>
+            {children}
+          </Heading>
         </Container>
       ),
       [BLOCKS.HEADING_4]: (node, children) => (
         <Container maxW="4xl">
-          <Heading size="sm">{children}</Heading>
+          <Heading size="sm" color={`${theme}.500`}>
+            {children}
+          </Heading>
         </Container>
       ),
       [BLOCKS.PARAGRAPH]: (node, children) => (
@@ -114,7 +120,7 @@ function ManagedContent({ name, showLastUpdated = true }) {
     <Skeleton isLoaded={loaded}>
       <Stack gap={4}>
         <Container maxW="4xl" padding={4}>
-          <Heading>{content.fields?.heading}</Heading>
+          <Heading color={`${theme}.500`}>{content.fields?.heading}</Heading>
           {showLastUpdated ? (
             <Text>Last updated {dayjs(content.sys?.updatedAt).toString()}</Text>
           ) : null}

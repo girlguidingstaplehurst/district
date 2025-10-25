@@ -7,26 +7,13 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import reportWebVitals from "./reportWebVitals";
 import Layout from "./Layout";
-import ShowCalendar from "./ShowCalendar";
-import AddEvent from "./AddEvent";
 import NoMatch from "./NoMatch";
-import Login from "./admin/Login";
 
 import "./index.css";
-import AdminLayout from "./admin/AdminLayout";
-import { AuthProvider } from "./admin/useAuth";
-import { Dashboard, populateDashboard } from "./admin/Dashboard";
-import { reviewEvent, ReviewEvent } from "./admin/ReviewEvent";
-import { createInvoice, CreateInvoice } from "./admin/CreateInvoice";
-import { ManageInvoice, manageInvoice } from "./admin/ManageInvoice";
 import ManagedContent from "./components/ManagedContent";
-import { CreateEvents } from "./admin/CreateEvents";
-import Location from "./Location";
-import WhatsOn from "./WhatsOn";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -36,64 +23,40 @@ const router = createBrowserRouter(
           index
           element={
             <ManagedContent
-              name="kathie-lamb-guide-centre"
+              name="girlguiding-staplehurst-district"
               showLastUpdated={false}
+              theme="brand"
             />
           }
         />
-        <Route path="about" element={<ManagedContent name="about" showLastUpdated={false}/>} />
-        <Route path="contact" element={<ManagedContent name="contact" showLastUpdated={false}/>} />
-        {/*<Route*/}
-        {/*  path="booking"*/}
-        {/*  element={<ShowCalendar />}*/}
-        {/*  loader={async () => await fetch("/api/v1/events")}*/}
-        {/*/>*/}
-        {/*<Route path="add-event" element={<AddEvent />} />*/}
-        {/*<Route*/}
-        {/*  path="whats-on"*/}
-        {/*  element={<WhatsOn />}*/}
-        {/*  loader={async () => await fetch("/api/v1/events")}*/}
-        {/*/>*/}
-        <Route path="location" element={<Location />} />
         <Route
-          path="privacy-policy"
-          element={<ManagedContent name="privacy-policy" />}
+          path="2nd-rainbows"
+          element={
+            <ManagedContent name="2nd-rainbows" showLastUpdated={false} theme="rainbows" />
+          }
         />
         <Route
-          path="terms-of-hire"
-          element={<ManagedContent name="terms-of-hire" />}
+          path="1st-brownies"
+          element={
+            <ManagedContent name="1st-brownies" showLastUpdated={false} theme="brownies" />
+          }
         />
         <Route
-          path="cleaning-and-damage-policy"
-          element={<ManagedContent name="cleaning-and-damage-policy" />}
+          path="4th-brownies"
+          element={
+            <ManagedContent name="4th-brownies" showLastUpdated={false} theme="brownies" />
+          }
+        />
+        <Route
+          path="1st-guides"
+          element={<ManagedContent name="1st-guides" showLastUpdated={false} theme="guides" />}
+        />
+        <Route
+          path="1st-rangers"
+          element={<ManagedContent name="1st-rangers" showLastUpdated={false} theme="rangers" />}
         />
         <Route path="*" element={<NoMatch />} />
       </Route>
-
-      <Route path="admin" element={<AdminLayout />}>
-        <Route index element={<Dashboard />} loader={populateDashboard} />
-        <Route path="create-events" element={<CreateEvents />} />
-        <Route
-          path="review/:eventID"
-          element={<ReviewEvent />}
-          loader={({ params }) => reviewEvent(params.eventID)}
-        />
-        <Route
-          path="create-invoice"
-          element={<CreateInvoice />}
-          loader={({ request }) => {
-            const url = new URL(request.url);
-            const events = url.searchParams.get("events");
-            return createInvoice(events);
-          }}
-        />
-        <Route
-          path="invoice/:invoiceID"
-          element={<ManageInvoice />}
-          loader={({ params }) => manageInvoice(params.invoiceID)}
-        />
-      </Route>
-      <Route path="admin/login" element={<Login />} />
     </Route>,
   ),
 );
@@ -102,9 +65,34 @@ const theme = extendTheme({
   colors: {
     black: "#1d1d1b",
     brand: {
-      300: "#00a7e5",
+      300: "#ffffff",
       500: "#007bc4",
       900: "#161b4e",
+      header: "#007bc4",
+    },
+    rainbows: {
+      300: "#ffffff",
+      500: "#e1120e",
+      900: "#96d3f5",
+      header: "#e1120e",
+    },
+    brownies: {
+      300: "#603d33",
+      500: "#603d33",
+      900: "#ffc80a",
+      header: "#603d33",
+    },
+    guides: {
+      300: "#ffffff",
+      500: "#8cb5e2",
+      900: "#173a86",
+      header: "#173a86"
+    },
+    rangers: {
+      300: "#fbdfe7",
+      500: "#e1120e",
+      900: "#54184a",
+      header: "#54184a",
     },
   },
   fonts: {
@@ -116,13 +104,9 @@ const theme = extendTheme({
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <GoogleOAuthProvider clientId="362406102359-frmsjn6et0551pciju1li4mep62thmse.apps.googleusercontent.com">
-      <ChakraProvider theme={theme}>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
-      </ChakraProvider>
-    </GoogleOAuthProvider>
+    <ChakraProvider theme={theme}>
+      <RouterProvider router={router} />
+    </ChakraProvider>
   </React.StrictMode>,
 );
 
