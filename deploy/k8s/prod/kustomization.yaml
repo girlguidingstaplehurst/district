@@ -11,4 +11,4 @@ patches:
   - path: patches/deployment.yaml
 images:
   - name: ghcr.io/girlguidingstaplehurst/booking
-    newTag: v0.2.4
+    newTag: v0.3.0
