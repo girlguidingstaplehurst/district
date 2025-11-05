@@ -116,10 +116,14 @@ function ManagedContent({ name, showLastUpdated = true, theme }) {
         </Container>
       ),
       [BLOCKS.OL_LIST]: (node, children) => (
-        <OrderedList>{children}</OrderedList>
+        <Container maxW="6xl">
+          <OrderedList>{children}</OrderedList>
+        </Container>
       ),
       [BLOCKS.UL_LIST]: (node, children) => (
-        <UnorderedList>{children}</UnorderedList>
+        <Container maxW="6xl">
+          <UnorderedList>{children}</UnorderedList>
+        </Container>
       ),
       [BLOCKS.LIST_ITEM]: (node, children) => <ListItem>{children}</ListItem>,
       [INLINES.HYPERLINK]: (node, children) => (

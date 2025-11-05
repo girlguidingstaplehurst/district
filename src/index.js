@@ -32,28 +32,62 @@ const router = createBrowserRouter(
         <Route
           path="2nd-rainbows"
           element={
-            <ManagedContent name="2nd-rainbows" showLastUpdated={false} theme="rainbows" />
+            <ManagedContent
+              name="2nd-rainbows"
+              showLastUpdated={false}
+              theme="rainbows"
+            />
           }
         />
         <Route
           path="1st-brownies"
           element={
-            <ManagedContent name="1st-brownies" showLastUpdated={false} theme="brownies" />
+            <ManagedContent
+              name="1st-brownies"
+              showLastUpdated={false}
+              theme="brownies"
+            />
           }
         />
         <Route
           path="4th-brownies"
           element={
-            <ManagedContent name="4th-brownies" showLastUpdated={false} theme="brownies" />
+            <ManagedContent
+              name="4th-brownies"
+              showLastUpdated={false}
+              theme="brownies"
+            />
           }
         />
         <Route
           path="1st-guides"
-          element={<ManagedContent name="1st-guides" showLastUpdated={false} theme="guides" />}
+          element={
+            <ManagedContent
+              name="1st-guides"
+              showLastUpdated={false}
+              theme="guides"
+            />
+          }
         />
         <Route
           path="1st-rangers"
-          element={<ManagedContent name="1st-rangers" showLastUpdated={false} theme="rangers" />}
+          element={
+            <ManagedContent
+              name="1st-rangers"
+              showLastUpdated={false}
+              theme="rangers"
+            />
+          }
+        />
+        <Route
+          path="volunteer"
+          element={
+            <ManagedContent
+              name="volunteer"
+              showLastUpdated={false}
+              theme="brand"
+            />
+          }
         />
         <Route path="*" element={<NoMatch />} />
       </Route>

@@ -52,10 +52,10 @@ function NavInDrawer() {
   const btnRef = useRef();
 
   const { pathname } = useLocation();
-  const theme = pathname === "/" ? "brand" : pathname.split("-")[1];
+  const path = pathname.split("-")[1];
   const [brand900] = useToken("colors", ["brand.900"]);
 
-  const image = pathname === "/" ? "/logo192.png" : `${pathname}-192.png`;
+  const image = path === undefined  ? "/logo192.png" : `${pathname}-192.png`;
 
   return (
     <>
@@ -90,6 +90,7 @@ function NavInDrawer() {
               <DrawerLink to="/4th-brownies" label="4th Brownies" onClick={onClose}/>
               <DrawerLink to="/1st-guides" label="1st Guides" onClick={onClose}/>
               <DrawerLink to="/1st-rangers" label="1st Rangers" onClick={onClose}/>
+              <DrawerLink to="/volunteer" label="Volunteering" onClick={onClose}/>
             </Stack>
           </DrawerBody>
 
@@ -104,7 +105,8 @@ function NavInDrawer() {
 
 function MenuLink({ label, children, to, ...props }) {
   const { pathname } = useLocation();
-  const theme = pathname === "/" ? "brand" : pathname.split("-")[1];
+  const path = pathname.split("-")[1];
+  const theme = path === undefined ? "brand" : path;
   const [brand300, brand500, brand900] = useToken("colors", [
     `${theme}.300`,
     `${theme}.500`,
@@ -138,10 +140,11 @@ function MenuLink({ label, children, to, ...props }) {
 
 function TopNav() {
   const { pathname } = useLocation();
-  const theme = pathname === "/" ? "brand" : pathname.split("-")[1];
+  const path = pathname.split("-")[1];
+  const theme = path === null ? "brand" : path;
   const [brand500] = useToken("colors", [`${theme}.500`]);
 
-  const image = pathname === "/" ? "/logo192.png" : `${pathname}-192.png`;
+  const image = path === undefined ? "/logo192.png" : `${pathname}-192.png`;
 
   return (
     <Flex
@@ -168,6 +171,7 @@ function TopNav() {
           <MenuLink to="/4th-brownies" label="4th Brownies" />
           <MenuLink to="/1st-guides" label="1st Guides" />
           <MenuLink to="/1st-rangers" label="1st Rangers" />
+          <MenuLink to="/volunteer" label="Volunteering" />
         </Stack>
       </Flex>
     </Flex>
@@ -179,7 +183,8 @@ function Layout() {
   const breakpoint = useBreakpoint({ ssr: false });
   const navInDrawer = breakpoint === "base" || breakpoint === "sm";
 
-  const theme = pathname === "/" ? "brand" : pathname.split("-")[1];
+  const path = pathname.split("-")[1];
+  const theme = path === undefined ? "brand" : path;
   const [brand900] = useToken("colors", [`${theme}.900`]);
 
   return (
