@@ -41,19 +41,22 @@ function Footer() {
               <Link as={ReactRouterLink} to="/">
                 <Heading size="sm">Girlguiding Staplehurst District</Heading>
               </Link>
-              <Link as={ReactRouterLink} to="2nd-rainbows">
+              <Link as={ReactRouterLink} to="2nd-staplehurst-rainbows">
                 2nd Rainbows
               </Link>
-              <Link as={ReactRouterLink} to="1st-brownies">
+              <Link as={ReactRouterLink} to="1st-staplehurst-brownies">
                 1st Brownies
               </Link>
-              <Link as={ReactRouterLink} to="4th-brownies">
-                4th Brownies
+              <Link as={ReactRouterLink} to="4th-staplehurst-brownies">
+                4th Staplehurst Brownies
               </Link>
-              <Link as={ReactRouterLink} to="1st-guides">
+              <Link as={ReactRouterLink} to="1st-marden-brownies">
+                1st Marden Brownies
+              </Link>
+              <Link as={ReactRouterLink} to="1st-staplehurst-guides">
                 1st Guides
               </Link>
-              <Link as={ReactRouterLink} to="1st-rangers">
+              <Link as={ReactRouterLink} to="1st-staplehurst-rangers">
                 1st Rangers
               </Link>
               <Link href="https://kathielambcentre.org/">

@@ -30,50 +30,60 @@ const router = createBrowserRouter(
           }
         />
         <Route
-          path="2nd-rainbows"
+          path="2nd-staplehurst-rainbows"
           element={
             <ManagedContent
-              name="2nd-rainbows"
+              name="2nd-staplehurst-rainbows"
               showLastUpdated={false}
               theme="rainbows"
             />
           }
         />
         <Route
-          path="1st-brownies"
+          path="1st-staplehurst-brownies"
           element={
             <ManagedContent
-              name="1st-brownies"
+              name="1st-staplehurst-brownies"
               showLastUpdated={false}
               theme="brownies"
             />
           }
         />
         <Route
-          path="4th-brownies"
+          path="4th-staplehurst-brownies"
           element={
             <ManagedContent
-              name="4th-brownies"
+              name="4th-staplehurst-brownies"
               showLastUpdated={false}
               theme="brownies"
             />
           }
         />
         <Route
-          path="1st-guides"
+          path="1st-marden-brownies"
           element={
             <ManagedContent
-              name="1st-guides"
+              name="1st-marden-brownies"
+              showLastUpdated={false}
+              theme="brownies"
+            />
+          }
+        />
+        <Route
+          path="1st-staplehurst-guides"
+          element={
+            <ManagedContent
+              name="1st-staplehurst-guides"
               showLastUpdated={false}
               theme="guides"
             />
           }
         />
         <Route
-          path="1st-rangers"
+          path="1st-staplehurst-rangers"
           element={
             <ManagedContent
-              name="1st-rangers"
+              name="1st-staplehurst-rangers"
               showLastUpdated={false}
               theme="rangers"
             />

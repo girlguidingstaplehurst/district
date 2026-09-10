@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   ButtonGroup,
   Container,
   Drawer,
@@ -13,6 +14,10 @@ import {
   IconButton,
   Image,
   Link,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Spacer,
   Stack,
   StackDivider,
@@ -52,7 +57,7 @@ function NavInDrawer() {
   const btnRef = useRef();
 
   const { pathname } = useLocation();
-  const path = pathname.split("-")[1];
+  const path = pathname.split("-")[2];
   const [brand900] = useToken("colors", ["brand.900"]);
 
   const image = path === undefined  ? "/logo192.png" : `${pathname}-192.png`;
@@ -85,11 +90,12 @@ function NavInDrawer() {
               divider={<StackDivider borderTop={`1px solid ${brand900}`} />}
             >
               <DrawerLink label="Home" to="/" onClick={onClose} />
-              <DrawerLink to="/2nd-rainbows" label="2nd Rainbows" onClick={onClose}/>
-              <DrawerLink to="/1st-brownies" label="1st Brownies" onClick={onClose}/>
-              <DrawerLink to="/4th-brownies" label="4th Brownies" onClick={onClose}/>
-              <DrawerLink to="/1st-guides" label="1st Guides" onClick={onClose}/>
-              <DrawerLink to="/1st-rangers" label="1st Rangers" onClick={onClose}/>
+              <DrawerLink to="/2nd-staplehurst-rainbows" label="2nd Staplehurst Rainbows" onClick={onClose}/>
+              <DrawerLink to="/1st-staplehurst-brownies" label="1st Staplehurst Brownies" onClick={onClose}/>
+              <DrawerLink to="/4th-staplehurst-brownies" label="4th Staplehurst Brownies" onClick={onClose}/>
+              <DrawerLink to="/1st-marden-brownies" label="1st Marden Brownies" onClick={onClose}/>
+              <DrawerLink to="/1st-staplehurst-guides" label="1st Staplehurst Guides" onClick={onClose}/>
+              <DrawerLink to="/1st-staplehurst-rangers" label="1st Staplehurst Rangers" onClick={onClose}/>
               <DrawerLink to="/volunteer" label="Volunteering" onClick={onClose}/>
             </Stack>
           </DrawerBody>
@@ -105,7 +111,7 @@ function NavInDrawer() {
 
 function MenuLink({ label, children, to, ...props }) {
   const { pathname } = useLocation();
-  const path = pathname.split("-")[1];
+  const path = pathname.split("-")[2];
   const theme = path === undefined ? "brand" : path;
   const [brand300, brand500, brand900] = useToken("colors", [
     `${theme}.300`,
@@ -120,6 +126,10 @@ function MenuLink({ label, children, to, ...props }) {
       as={ReactRouterLink}
       to={to}
       flex={1}
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      minH="40px"
       textAlign="center"
       justifySelf="end"
       fontWeight="bold"
@@ -138,10 +148,66 @@ function MenuLink({ label, children, to, ...props }) {
   );
 }
 
+function MenuSection({ label, items, ...props }) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { pathname } = useLocation();
+  const path = pathname.split("-")[2];
+  const theme = path === undefined ? "brand" : path;
+  const [brand300, brand500, brand900] = useToken("colors", [
+    `${theme}.300`,
+    `${theme}.500`,
+    `${theme}.900`,
+  ]);
+
+  const isActive = items.some((item) => pathname === item.to);
+
+  return (
+    <Menu isOpen={isOpen} onClose={onClose} {...props}>
+      <MenuButton
+        as={Button}
+        onClick={isOpen ? onClose : onOpen}
+        flex={1}
+        textAlign="center"
+        fontWeight="bold"
+        borderTop={`3px solid ${brand900}`}
+        borderTopRadius={3}
+        color={isActive ? brand500 : brand300}
+        bg="transparent"
+        _hover={{
+          bg: brand900,
+          color: brand500,
+          borderTop: `3px solid ${brand500}`,
+        }}
+        _expanded={{
+          bg: brand900,
+          color: brand500,
+          borderTop: `3px solid ${brand500}`,
+        }}
+      >
+        {label}
+      </MenuButton>
+      <MenuList>
+        {items.map((item) => (
+          <MenuItem
+            key={item.to}
+            as={ReactRouterLink}
+            to={item.to}
+            onClick={onClose}
+            color={pathname === item.to ? brand500 : brand900}
+            fontWeight="bold"
+          >
+            {item.label}
+          </MenuItem>
+        ))}
+      </MenuList>
+    </Menu>
+  );
+}
+
 function TopNav() {
   const { pathname } = useLocation();
-  const path = pathname.split("-")[1];
-  const theme = path === null ? "brand" : path;
+  const path = pathname.split("-")[2];
+  const theme = path === undefined ? "brand" : path;
   const [brand500] = useToken("colors", [`${theme}.500`]);
 
   const image = path === undefined ? "/logo192.png" : `${pathname}-192.png`;
@@ -166,12 +232,30 @@ function TopNav() {
           alignContent="end"
         >
           <MenuLink to="/" label="Home" />
-          <MenuLink to="/2nd-rainbows" label="2nd Rainbows" />
-          <MenuLink to="/1st-brownies" label="1st Brownies" />
-          <MenuLink to="/4th-brownies" label="4th Brownies" />
-          <MenuLink to="/1st-guides" label="1st Guides" />
-          <MenuLink to="/1st-rangers" label="1st Rangers" />
-          <MenuLink to="/volunteer" label="Volunteering" />
+           <MenuSection
+             label="Rainbows"
+             items={[{ to: "/2nd-staplehurst-rainbows", label: "2nd Staplehurst Rainbows" }]}
+           />
+           <MenuSection
+             label="Brownies"
+             items={[
+               { to: "/1st-staplehurst-brownies", label: "1st Staplehurst Brownies" },
+               { to: "/4th-staplehurst-brownies", label: "4th Staplehurst Brownies" },
+               { to: "/1st-marden-brownies", label: "1st Marden Brownies" },
+             ]}
+           />
+           <MenuSection
+             label="Guides"
+             items={[{ to: "/1st-staplehurst-guides", label: "1st Staplehurst Guides" }]}
+           />
+           <MenuSection
+             label="Rangers"
+             items={[{ to: "/1st-staplehurst-rangers", label: "1st Staplehurst Rangers" }]}
+           />
+           <MenuSection
+             label="Volunteering"
+             items={[{ to: "/volunteer", label: "Volunteering" }]}
+           />
         </Stack>
       </Flex>
     </Flex>
@@ -183,7 +267,7 @@ function Layout() {
   const breakpoint = useBreakpoint({ ssr: false });
   const navInDrawer = breakpoint === "base" || breakpoint === "sm";
 
-  const path = pathname.split("-")[1];
+  const path = pathname.split("-")[2];
   const theme = path === undefined ? "brand" : path;
   const [brand900] = useToken("colors", [`${theme}.900`]);
 
