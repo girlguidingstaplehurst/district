@@ -42,10 +42,10 @@ function Footer() {
                 <Heading size="sm">Girlguiding Staplehurst District</Heading>
               </Link>
               <Link as={ReactRouterLink} to="2nd-staplehurst-rainbows">
-                2nd Rainbows
+                2nd Staplehurst Rainbows
               </Link>
               <Link as={ReactRouterLink} to="1st-staplehurst-brownies">
-                1st Brownies
+                1st Staplehurst Brownies
               </Link>
               <Link as={ReactRouterLink} to="4th-staplehurst-brownies">
                 4th Staplehurst Brownies
@@ -54,10 +54,10 @@ function Footer() {
                 1st Marden Brownies
               </Link>
               <Link as={ReactRouterLink} to="1st-staplehurst-guides">
-                1st Guides
+                1st Staplehurst Guides
               </Link>
               <Link as={ReactRouterLink} to="1st-staplehurst-rangers">
-                1st Rangers
+                1st Staplehurst Rangers
               </Link>
               <Link href="https://kathielambcentre.org/">
                 <Heading size="sm">Kathie Lamb Guide Centre</Heading>
