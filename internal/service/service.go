@@ -54,6 +54,19 @@ func (s *Service) Run(ctx context.Context) error {
 		PathPrefix: "/build",
 	}))
 
+	// Serve the React shell for unmatched frontend browser routes before the
+	// OpenAPI validator can reject them. API requests must continue through the
+	// validator and generated handlers.
+	app.Use(func(c *fiber.Ctx) error {
+		if c.Method() != fiber.MethodGet && c.Method() != fiber.MethodHead {
+			return c.Next()
+		}
+		if len(c.Path()) >= len("/api/") && c.Path()[:len("/api/")] == "/api/" {
+			return c.Next()
+		}
+		return filesystem.SendFile(c, http.FS(booking.IndexHTML), "/build/index.html")
+	})
+
 	swagger, err := rest.GetSwagger()
 	if err != nil {
 		return err
@@ -71,15 +84,6 @@ func (s *Service) Run(ctx context.Context) error {
 
 	rs := rest.NewServer()
 	rest.RegisterHandlers(app, rest.NewStrictHandler(rs, nil))
-
-	// API and assets are registered above; remaining browser GET/HEAD requests
-	// are client-side routes and must receive the React application shell.
-	app.Use(func(c *fiber.Ctx) error {
-		if c.Method() != fiber.MethodGet && c.Method() != fiber.MethodHead {
-			return c.Next()
-		}
-		return filesystem.SendFile(c, http.FS(booking.IndexHTML), "/build/index.html")
-	})
 
 	return app.Listen(":8080")
 }

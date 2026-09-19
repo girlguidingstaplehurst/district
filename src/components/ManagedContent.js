@@ -17,6 +17,7 @@ import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 import dayjs from "dayjs";
 import Carousel from "./Carousel";
 import { getPage, pageTheme } from "../content";
+import { ContentfulError, MissingContent } from "./ContentfulFallback";
 
 function ManagedContent({ name, showLastUpdated = true, theme: requestedTheme }) {
   const [content, setContent] = useState(null);
@@ -38,7 +39,8 @@ function ManagedContent({ name, showLastUpdated = true, theme: requestedTheme })
     return () => { active = false; };
   }, [name]);
 
-  if (state === "missing" || state === "error") return null;
+  if (state === "missing") return <MissingContent />;
+  if (state === "error") return <ContentfulError />;
   const theme = content ? pageTheme(content) : requestedTheme;
 
   const options = {

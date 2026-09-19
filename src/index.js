@@ -4,7 +4,6 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, useLocation } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import Layout from "./Layout";
-import NoMatch from "./NoMatch";
 import ManagedContent from "./components/ManagedContent";
 import { ContentProvider } from "./ContentProvider";
 import { getPageSlug } from "./content";
@@ -22,7 +21,6 @@ const router = createBrowserRouter(
         <Route index element={<ContentfulPage />} />
         <Route path="*" element={<ContentfulPage />} />
       </Route>
-      <Route path="/not-found" element={<NoMatch />} />
     </Route>,
   ),
 );
