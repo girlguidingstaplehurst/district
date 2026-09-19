@@ -89,6 +89,14 @@ function field(entry, ...names) {
   return undefined;
 }
 
+function nonEmptyField(entry, ...names) {
+  for (const name of names) {
+    const value = entry?.fields?.[name];
+    if (value) return value;
+  }
+  return undefined;
+}
+
 function resolvePageSlug(page) {
   return page?.fields?.name || page?.fields?.slug || page?.fields?.path;
 }
@@ -106,7 +114,7 @@ function navigationEntry(entry) {
   const page = target?.fields?.name || target?.fields?.slug ? target : null;
   return {
     id: entryId(entry) || `${field(entry, "label", "name")}-${href}`,
-    label: field(entry, "label", "name", "title") || "Untitled",
+    label: nonEmptyField(entry, "linkLabel", "label", "name", "title") || "Untitled",
     href: href || null,
     page,
     order: Number(field(entry, "order", "position", "sortOrder") || 0),

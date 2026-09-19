@@ -33,6 +33,15 @@ describe("Contentful page and navigation helpers", () => {
     expect(tree[0].href).toBe("https://example.com");
   });
 
+  test("prefers link labels and falls back when they are missing or empty", () => {
+    const explicit = entry("explicit", { linkLabel: "Get involved", label: "Volunteering", name: "volunteer" });
+    const missing = entry("missing", { label: "District", name: "district" });
+    const empty = entry("empty", { linkLabel: "", label: "Contact", name: "contact" });
+    const tree = normalizeNavigation([explicit, missing, empty]);
+
+    expect(tree.map((item) => item.label)).toEqual(["Contact", "District", "Get involved"]);
+  });
+
   test("warns but retains deep navigation", () => {
     const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
     const first = entry("first", { label: "First" });
