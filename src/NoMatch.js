@@ -1,6 +1,4 @@
-import { Container, Heading, Stack, Text } from "@chakra-ui/react";
-import dayjs from "dayjs";
-import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import { Container, Heading, Stack } from "@chakra-ui/react";
 
 function NoMatch() {
   return <Stack gap={4}>
