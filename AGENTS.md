@@ -13,6 +13,7 @@
 - Run the Go service directly with `go run ./cmd/district` (or `mage run`). `mage dev` runs `skaffold dev`, builds with ko, applies `deploy/k8s/local`, and port-forwards the service to `localhost:8080` and PostgreSQL to `localhost:5432`; it requires Docker/Kubernetes, Skaffold, and ko.
 - Run Go tests with `go test ./...`; format changed Go files with `gofmt`. There is no repository-specific lint or typecheck command configured.
 - `mage generate` runs `go generate ./...`. Generation includes the React build (`embed.go`), oapi-codegen server/models, mock generation, and the test client/builder; run it after changing the OpenAPI document or generator inputs, then inspect generated diffs.
+- After archiving an OpenSpec change, run `npm run build` and inspect the generated `build/` artifact changes so the embedded frontend assets are up to date.
 
 ## Runtime and deployment details
 

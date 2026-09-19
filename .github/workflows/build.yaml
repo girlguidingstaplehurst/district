@@ -24,6 +24,11 @@ jobs:
         with:
           go-version-file: 'go.mod'
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Setup ko
         uses: ko-build/setup-ko@v0.6
 
@@ -35,6 +40,12 @@ jobs:
           branch: main
           patchAll: 'true '
           noVersionBumpBehavior: 'patch'
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: REACT_APP_VERSION=${{ steps.semver.outputs.next }} npm run build
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
