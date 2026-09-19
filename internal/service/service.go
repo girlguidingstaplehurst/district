@@ -54,12 +54,6 @@ func (s *Service) Run(ctx context.Context) error {
 		PathPrefix: "/build",
 	}))
 
-	htmlPaths := []string{"/2nd-staplehurst-rainbows", "/1st-staplehurst-brownies", "/4th-staplehurst-brownies",
-		"/1st-marden-brownies", "/1st-staplehurst-guides", "/1st-staplehurst-rangers", "/volunteer"}
-	app.Use(htmlPaths, func(c *fiber.Ctx) error {
-		return filesystem.SendFile(c, http.FS(booking.IndexHTML), "/build/index.html")
-	})
-
 	swagger, err := rest.GetSwagger()
 	if err != nil {
 		return err
@@ -77,6 +71,15 @@ func (s *Service) Run(ctx context.Context) error {
 
 	rs := rest.NewServer()
 	rest.RegisterHandlers(app, rest.NewStrictHandler(rs, nil))
+
+	// API and assets are registered above; remaining browser GET/HEAD requests
+	// are client-side routes and must receive the React application shell.
+	app.Use(func(c *fiber.Ctx) error {
+		if c.Method() != fiber.MethodGet && c.Method() != fiber.MethodHead {
+			return c.Next()
+		}
+		return filesystem.SendFile(c, http.FS(booking.IndexHTML), "/build/index.html")
+	})
 
 	return app.Listen(":8080")
 }

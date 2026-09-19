@@ -1,4 +1,3 @@
-import * as contentful from "contentful";
 import {
   Box,
   Container,
@@ -17,31 +16,30 @@ import { BLOCKS, INLINES, MARKS } from "@contentful/rich-text-types";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import dayjs from "dayjs";
 import Carousel from "./Carousel";
+import { getPage, pageTheme } from "../content";
 
-const client = contentful.createClient({
-  space: "o3u1j7dkyy42",
-  accessToken: "mnamX4N0qebOgpJN6KJVgakUGcSLFrFEvcHhdtcEO14",
-});
-
-function ManagedContent({ name, showLastUpdated = true, theme }) {
-  const [content, setContent] = useState({});
-  const [loaded, setLoaded] = useState(false);
+function ManagedContent({ name, showLastUpdated = true, theme: requestedTheme }) {
+  const [content, setContent] = useState(null);
+  const [state, setState] = useState("loading");
 
   useEffect(() => {
-    const getContent = async () => {
-      const entry = await client.getEntries({
-        content_type: "districtPage",
-        limit: 1,
-        "fields.name": name,
+    let active = true;
+    setState("loading");
+    getPage(name)
+      .then((item) => {
+        if (!active) return;
+        setContent(item);
+        setState(item ? "loaded" : "missing");
+      })
+      .catch((error) => {
+        console.error(`Unable to load page ${name}`, error);
+        if (active) setState("error");
       });
-      return entry.items[0];
-    };
-
-    getContent().then((item) => {
-      setContent(item);
-      setLoaded(true);
-    });
+    return () => { active = false; };
   }, [name]);
+
+  if (state === "missing" || state === "error") return null;
+  const theme = content ? pageTheme(content) : requestedTheme;
 
   const options = {
     renderMark: {
@@ -135,15 +133,15 @@ function ManagedContent({ name, showLastUpdated = true, theme }) {
   };
 
   return (
-    <Skeleton isLoaded={loaded}>
+    <Skeleton isLoaded={state === "loaded"}>
       <Stack gap={4}>
         <Container maxW="6xl" padding={4}>
-          <Heading color={`${theme}.500`}>{content.fields?.heading}</Heading>
+          <Heading color={`${theme}.500`}>{content?.fields?.heading}</Heading>
           {showLastUpdated ? (
-            <Text>Last updated {dayjs(content.sys?.updatedAt).toString()}</Text>
+            <Text>Last updated {dayjs(content?.sys?.updatedAt).toString()}</Text>
           ) : null}
         </Container>
-        {documentToReactComponents(content.fields?.richContent, options)}
+        {documentToReactComponents(content?.fields?.richContent, options)}
       </Stack>
     </Skeleton>
   );

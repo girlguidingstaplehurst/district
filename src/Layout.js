@@ -1,297 +1,148 @@
 import {
-  Box,
-  Button,
-  ButtonGroup,
-  Container,
-  Drawer,
-  DrawerBody,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  Flex,
-  IconButton,
-  Image,
-  Link,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Spacer,
-  Stack,
-  StackDivider,
-  useBreakpoint,
-  useDisclosure,
-  useToken,
+  Box, Button, ButtonGroup, Container, Drawer, DrawerBody, DrawerCloseButton,
+  DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, Flex, IconButton,
+  Image, Link, Menu, MenuButton, MenuItem, MenuList, Spacer, Stack,
+  StackDivider, useBreakpoint, useDisclosure, useToken,
 } from "@chakra-ui/react";
 import { Link as ReactRouterLink, Outlet, useLocation } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { TbMenu2 } from "react-icons/tb";
+import { useContent } from "./ContentProvider";
+import { pageTheme, themeLogo } from "./content";
 import "./App.css";
 import RoundedButton from "./components/RoundedButton";
 import Footer from "./components/Footer";
-import { TbMenu2 } from "react-icons/tb";
-import { useRef } from "react";
 
-function DrawerLink({ label, children, to, ...props }) {
+function Destination({ item, children, ...props }) {
+  if (!item.href) return <Box {...props}>{children}</Box>;
+  if (item.href.startsWith("/")) {
+    return <Link as={ReactRouterLink} to={item.href} {...props}>{children}</Link>;
+  }
+  return <Link href={item.href} {...props}>{children}</Link>;
+}
+
+function DrawerLink({ item, onClick, depth = 0 }) {
   const { pathname } = useLocation();
   const [brand500, brand900] = useToken("colors", ["brand.500", "brand.900"]);
-
-  const linkColor = pathname === to ? brand500 : brand900;
-
   return (
-    <Link
-      as={ReactRouterLink}
-      to={to}
-      flex={1}
-      fontWeight="bold"
-      color={linkColor}
-      {...props}
-    >
-      {label}
-    </Link>
+    <Destination item={item} onClick={onClick} flex={1} fontWeight={depth >= 2 ? "normal" : "bold"} color={pathname === item.href ? brand500 : brand900}>
+      {item.label}
+    </Destination>
   );
 }
 
 function NavInDrawer() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { navigation, page } = useContent();
   const btnRef = useRef();
+  const scrollRef = useRef();
+  const [scrollState, setScrollState] = useState({ top: false, bottom: false });
+  const theme = pageTheme(page);
+  const [brand900] = useToken("colors", [`${theme}.900`]);
 
-  const { pathname } = useLocation();
-  const path = pathname.split("-")[2];
-  const [brand900] = useToken("colors", ["brand.900"]);
-
-  const image = path === undefined  ? "/logo192.png" : `${pathname}-192.png`;
+  const updateScrollHints = () => {
+    const node = scrollRef.current;
+    if (!node) return;
+    setScrollState({ top: node.scrollTop > 0, bottom: node.scrollTop + node.clientHeight < node.scrollHeight - 1 });
+  };
+  useEffect(() => { if (isOpen) setTimeout(updateScrollHints, 0); }, [isOpen, navigation]);
 
   return (
     <>
       <Flex gap={4} direction="column" align="center">
-        <Image src={image} boxSize="192px" />
-        <ButtonGroup>
-          <IconButton
-            icon={<TbMenu2 />}
-            ariaLabel="Open Navigation Menu"
-            onClick={onOpen}
-          />
-        </ButtonGroup>
+        <Image src={themeLogo(page?.fields?.theme)} boxSize="192px" />
+        <ButtonGroup><IconButton ref={btnRef} icon={<TbMenu2 />} aria-label="Open Navigation Menu" onClick={onOpen} /></ButtonGroup>
       </Flex>
-      <Drawer
-        isOpen={isOpen}
-        placement="right"
-        onClose={onClose}
-        finalFocusRef={btnRef}
-      >
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose} finalFocusRef={btnRef}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
           <DrawerHeader>Navigate</DrawerHeader>
-
-          <DrawerBody>
-            <Stack
-              divider={<StackDivider borderTop={`1px solid ${brand900}`} />}
-            >
-              <DrawerLink label="Home" to="/" onClick={onClose} />
-              <DrawerLink to="/2nd-staplehurst-rainbows" label="2nd Staplehurst Rainbows" onClick={onClose}/>
-              <DrawerLink to="/1st-staplehurst-brownies" label="1st Staplehurst Brownies" onClick={onClose}/>
-              <DrawerLink to="/4th-staplehurst-brownies" label="4th Staplehurst Brownies" onClick={onClose}/>
-              <DrawerLink to="/1st-marden-brownies" label="1st Marden Brownies" onClick={onClose}/>
-              <DrawerLink to="/1st-staplehurst-guides" label="1st Staplehurst Guides" onClick={onClose}/>
-              <DrawerLink to="/1st-staplehurst-rangers" label="1st Staplehurst Rangers" onClick={onClose}/>
-              <DrawerLink to="/volunteer" label="Volunteering" onClick={onClose}/>
+          <DrawerBody display="flex" flexDirection="column" minH={0}>
+            {scrollState.top && <Box textAlign="center" aria-hidden="true">^ More navigation</Box>}
+            <Stack ref={scrollRef} onScroll={updateScrollHints} overflowY="auto" flex={1} minH={0} divider={<StackDivider borderTop={`1px solid ${brand900}`} />}>
+              {navigation.map((item) => (
+                <Box key={item.id}>
+                  <DrawerLink item={item} onClick={onClose} />
+                  {renderDrawerChildren(item.children, onClose)}
+                </Box>
+              ))}
             </Stack>
+            {scrollState.bottom && <Box textAlign="center" aria-hidden="true">v More navigation</Box>}
           </DrawerBody>
-
-          <DrawerFooter bg="brand.900" justifyContent="center">
-            <Image src="/logo192.png" />
-          </DrawerFooter>
+          <DrawerFooter bg={`${theme}.900`} justifyContent="center"><Image src={themeLogo(page?.fields?.theme)} /></DrawerFooter>
         </DrawerContent>
       </Drawer>
     </>
   );
 }
 
-function MenuLink({ label, children, to, ...props }) {
+function MenuLink({ item, ...props }) {
   const { pathname } = useLocation();
-  const path = pathname.split("-")[2];
-  const theme = path === undefined ? "brand" : path;
-  const [brand300, brand500, brand900] = useToken("colors", [
-    `${theme}.300`,
-    `${theme}.500`,
-    `${theme}.900`,
-  ]);
-
-  const linkColor = pathname === to ? brand500 : brand300;
-
-  return (
-    <Link
-      as={ReactRouterLink}
-      to={to}
-      flex={1}
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      minH="40px"
-      textAlign="center"
-      justifySelf="end"
-      fontWeight="bold"
-      borderTop={`3px solid ${brand900}`}
-      color={linkColor}
-      borderTopRadius={3}
-      _hover={{
-        bg: brand900,
-        color: brand500,
-        borderTop: `3px solid ${brand500}`,
-      }}
-      {...props}
-    >
-      {label}
-    </Link>
-  );
+  const { page } = useContent();
+  const theme = pageTheme(page);
+  const [text, active, border] = useToken("colors", [`${theme}.300`, `${theme}.500`, `${theme}.900`]);
+  return <Destination item={item} {...props} flex={1} display="flex" alignItems="center" justifyContent="center" minH="40px" textAlign="center" fontWeight="bold" borderTop="3px solid transparent" color={pathname === item.href ? active : text} _hover={{ bg: border, color: active, borderTop: `3px solid ${active}` }}>{item.label}</Destination>;
 }
 
-function MenuSection({ label, items, ...props }) {
+function MenuSection({ item }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { pathname } = useLocation();
-  const path = pathname.split("-")[2];
-  const theme = path === undefined ? "brand" : path;
-  const [brand300, brand500, brand900] = useToken("colors", [
-    `${theme}.300`,
-    `${theme}.500`,
-    `${theme}.900`,
-  ]);
-
-  const isActive = items.some((item) => pathname === item.to);
-
+  const { page } = useContent();
+  const theme = pageTheme(page);
+  const [text, active, border] = useToken("colors", [`${theme}.300`, `${theme}.500`, `${theme}.900`]);
+  const isActive = pathname === item.href || item.children.some((child) => pathname === child.href);
   return (
-    <Menu isOpen={isOpen} onClose={onClose} {...props}>
-      <MenuButton
-        as={Button}
-        onClick={isOpen ? onClose : onOpen}
-        flex={1}
-        textAlign="center"
-        fontWeight="bold"
-        borderTop={`3px solid ${brand900}`}
-        borderTopRadius={3}
-        color={isActive ? brand500 : brand300}
-        bg="transparent"
-        _hover={{
-          bg: brand900,
-          color: brand500,
-          borderTop: `3px solid ${brand500}`,
-        }}
-        _expanded={{
-          bg: brand900,
-          color: brand500,
-          borderTop: `3px solid ${brand500}`,
-        }}
-      >
-        {label}
-      </MenuButton>
-      <MenuList>
-        {items.map((item) => (
-          <MenuItem
-            key={item.to}
-            as={ReactRouterLink}
-            to={item.to}
-            onClick={onClose}
-            color={pathname === item.to ? brand500 : brand900}
-            fontWeight="bold"
-          >
-            {item.label}
-          </MenuItem>
-        ))}
-      </MenuList>
+    <Menu isOpen={isOpen} onClose={onClose}>
+      <MenuButton as={Button} onClick={isOpen ? onClose : onOpen} flex={1} textAlign="center" fontWeight="bold" borderTop="3px solid transparent" color={isActive ? active : text} bg="transparent" _hover={{ bg: border, color: active, borderTop: `3px solid ${active}` }} _expanded={{ bg: border, color: active, borderTop: `3px solid ${active}` }}>{item.label}</MenuButton>
+      <MenuList>{item.children.map((child) => <DesktopNestedMenu key={child.id} item={child} />)}</MenuList>
     </Menu>
   );
 }
 
-function TopNav() {
+function DesktopNestedMenu({ item, depth = 0 }) {
   const { pathname } = useLocation();
-  const path = pathname.split("-")[2];
-  const theme = path === undefined ? "brand" : path;
-  const [brand500] = useToken("colors", [`${theme}.500`]);
-
-  const image = path === undefined ? "/logo192.png" : `${pathname}-192.png`;
-
+  const { page } = useContent();
+  const theme = pageTheme(page);
+  const [border] = useToken("colors", [`${theme}.900`]);
   return (
-    <Flex
-      spacing={4}
-      flex={1}
-      gap={4}
-      justifyContent="center"
-      alignContent="end"
-      wrap="wrap"
-    >
-      <Image src={image} />
-      <Flex flexDirection="column" flex={1}>
-        <Spacer />
-        <Stack
-          divider={<StackDivider borderLeft={`1px solid ${brand500}`} />}
-          direction="row"
-          minH="2em"
-          justifyContent="center"
-          alignContent="end"
-        >
-          <MenuLink to="/" label="Home" />
-           <MenuSection
-             label="Rainbows"
-             items={[{ to: "/2nd-staplehurst-rainbows", label: "2nd Staplehurst Rainbows" }]}
-           />
-           <MenuSection
-             label="Brownies"
-             items={[
-               { to: "/1st-staplehurst-brownies", label: "1st Staplehurst Brownies" },
-               { to: "/4th-staplehurst-brownies", label: "4th Staplehurst Brownies" },
-               { to: "/1st-marden-brownies", label: "1st Marden Brownies" },
-             ]}
-           />
-           <MenuSection
-             label="Guides"
-             items={[{ to: "/1st-staplehurst-guides", label: "1st Staplehurst Guides" }]}
-           />
-           <MenuSection
-             label="Rangers"
-             items={[{ to: "/1st-staplehurst-rangers", label: "1st Staplehurst Rangers" }]}
-           />
-           <MenuSection
-             label="Volunteering"
-             items={[{ to: "/volunteer", label: "Volunteering" }]}
-           />
-        </Stack>
-      </Flex>
-    </Flex>
+    <Box key={item.id}>
+      <MenuItem
+        as="a"
+        href={item.href || undefined}
+        pl={depth > 0 ? 4 + depth * 4 : 4}
+        color={pathname === item.href ? `${theme}.500` : border}
+        fontWeight={depth === 0 ? "bold" : "normal"}
+      >
+        {item.label}
+      </MenuItem>
+      {item.children.map((child) => <DesktopNestedMenu key={child.id} item={child} depth={depth + 1} />)}
+    </Box>
   );
 }
 
+function renderDrawerChildren(children, onClose, depth = 0) {
+  return children.map((child) => (
+    <Box key={child.id} pl={(depth + 1) * 4}>
+      <DrawerLink item={child} onClick={onClose} depth={depth + 1} />
+      {renderDrawerChildren(child.children, onClose, depth + 1)}
+    </Box>
+  ));
+}
+
+function TopNav() {
+  const { navigation, page } = useContent();
+  const theme = pageTheme(page);
+  const [brand500] = useToken("colors", [`${theme}.500`]);
+  return <Flex spacing={4} flex={1} gap={4} justifyContent="center" alignContent="end" wrap="wrap"><Image src={themeLogo(page?.fields?.theme)} /><Flex flexDirection="column" flex={1}><Spacer /><Stack divider={<StackDivider borderLeft={`1px solid ${brand500}`} />} direction="row" minH="2em" justifyContent="center" alignContent="end">{navigation.map((item) => item.children.length ? <MenuSection key={item.id} item={item} /> : <MenuLink key={item.id} item={item} />)}</Stack></Flex></Flex>;
+}
+
 function Layout() {
-  const { pathname } = useLocation();
   const breakpoint = useBreakpoint({ ssr: false });
   const navInDrawer = breakpoint === "base" || breakpoint === "sm";
-
-  const path = pathname.split("-")[2];
-  const theme = path === undefined ? "brand" : path;
-  const [brand900] = useToken("colors", [`${theme}.900`]);
-
-  return (
-    <>
-      <div id="top"></div>
-      <Box bg={brand900} color="white">
-        <Container maxW="6xl" padding={4}>
-          {navInDrawer ? <NavInDrawer /> : <TopNav />}
-        </Container>
-      </Box>
-      <Box>
-        <Outlet />
-        <Container maxW="6xl" padding={4}>
-          <Box margin={8} textAlign="center">
-            <RoundedButton as="a" href="#top">
-              Back to top
-            </RoundedButton>
-          </Box>
-        </Container>
-      </Box>
-      <Footer />
-    </>
-  );
+  const { page } = useContent();
+  const theme = pageTheme(page);
+  return <><div id="top" /><Box bg={`${theme}.900`} color="white"><Container maxW="6xl" padding={4}>{navInDrawer ? <NavInDrawer /> : <TopNav />}</Container></Box><Box><Outlet /><Container maxW="6xl" padding={4}><Box margin={8} textAlign="center"><RoundedButton as="a" href="#top">Back to top</RoundedButton></Box></Container></Box><Footer /></>;
 }
 
 export default Layout;

@@ -1,81 +1,36 @@
-import {
-  Box,
-  Center,
-  Container,
-  Grid,
-  GridItem,
-  Heading,
-  Image,
-  Link,
-  Stack,
-  StackDivider,
-  Text,
-  useToken,
-} from "@chakra-ui/react";
+import { Box, Center, Container, Flex, Image, Link, SimpleGrid, Stack, Text, useBreakpointValue } from "@chakra-ui/react";
 import { Link as ReactRouterLink } from "react-router-dom";
+import { useContent } from "../ContentProvider";
 
-export function getVersion() {
-  return process.env.REACT_APP_VERSION || "development";
+export function getVersion() { return process.env.REACT_APP_VERSION || "development"; }
+
+function FooterDestination({ item, children, ...props }) {
+  if (!item.href) return <Text {...props}>{children}</Text>;
+  return item.href.startsWith("/") ? <Link as={ReactRouterLink} to={item.href} {...props}>{children}</Link> : <Link href={item.href} {...props}>{children}</Link>;
+}
+
+function FooterChildren({ items, depth = 1 }) {
+  return items.map((item) => (
+    <Box key={item.id}>
+      <FooterDestination item={item} pl={depth * 3} fontWeight="normal" fontSize="sm" whiteSpace="nowrap">{item.label}</FooterDestination>
+      <FooterChildren items={item.children} depth={depth + 1} />
+    </Box>
+  ));
 }
 
 function Footer() {
-  const [brand500] = useToken("colors", ["brand.500"]);
+  const { navigation } = useContent();
+  const isMobile = useBreakpointValue({ base: true, md: false });
   return (
     <Box bg="brand.900" color="white">
       <Container maxW="6xl" padding={4}>
-        <Center>
-          <Stack
-            align="center"
-            direction="row"
-            divider={
-              <StackDivider borderLeft={`1px solid ${brand500}`} padding={2} />
-            }
-            marginBottom={8}
-            alignContent="center"
-          >
-            <Image
-              flex="1"
-              src="/logo192.png"
-              boxSize={192}
-              maxW={192}
-              maxH={192}
-              padding={4}
-            />
-            <Stack gap={4}>
-              <Link as={ReactRouterLink} to="/">
-                <Heading size="sm">Girlguiding Staplehurst District</Heading>
-              </Link>
-              <Link as={ReactRouterLink} to="2nd-staplehurst-rainbows">
-                2nd Staplehurst Rainbows
-              </Link>
-              <Link as={ReactRouterLink} to="1st-staplehurst-brownies">
-                1st Staplehurst Brownies
-              </Link>
-              <Link as={ReactRouterLink} to="4th-staplehurst-brownies">
-                4th Staplehurst Brownies
-              </Link>
-              <Link as={ReactRouterLink} to="1st-marden-brownies">
-                1st Marden Brownies
-              </Link>
-              <Link as={ReactRouterLink} to="1st-staplehurst-guides">
-                1st Staplehurst Guides
-              </Link>
-              <Link as={ReactRouterLink} to="1st-staplehurst-rangers">
-                1st Staplehurst Rangers
-              </Link>
-              <Link href="https://kathielambcentre.org/">
-                <Heading size="sm">Kathie Lamb Guide Centre</Heading>
-              </Link>
-            </Stack>
-          </Stack>
-        </Center>
-        <Text fontSize={12} align="center">
-          &copy; {new Date().getFullYear()} Girlguiding Staplehurst District.
-          Registered Charity 801848
-        </Text>
-        <Text fontSize={12} align="center">
-          Version {getVersion()}
-        </Text>
+        {!isMobile && <SimpleGrid columns={{ md: navigation.length || 1 }} spacing={6} marginBottom={8}>
+          {navigation.map((item) => <Stack key={item.id} spacing={2}>
+            <FooterDestination item={item} fontWeight="bold" fontSize="sm" whiteSpace="nowrap">{item.label}</FooterDestination>
+            <FooterChildren items={item.children} />
+          </Stack>)}
+        </SimpleGrid>}
+        <Center><Flex align="center" direction="column" gap={2}><Link href="https://kathielambcentre.org/"><Image src="/logo192.png" boxSize={128} /></Link><Text fontSize={12} align="center">&copy; {new Date().getFullYear()} Girlguiding Staplehurst District. Registered Charity 801848</Text><Text fontSize={12} align="center">Version {getVersion()}</Text></Flex></Center>
       </Container>
     </Box>
   );

@@ -3,6 +3,11 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { MemoryRouter } from "react-router-dom";
 import Footer, { getVersion } from "./Footer";
 import { resolveVersion } from "../../scripts/version";
+import { ContentProvider } from "../ContentProvider";
+
+beforeAll(() => {
+  window.matchMedia = window.matchMedia || (() => ({ matches: false, addListener: () => {}, removeListener: () => {}, addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => false }));
+});
 
 describe("application version", () => {
   const originalVersion = process.env.REACT_APP_VERSION;
@@ -45,7 +50,7 @@ describe("application version", () => {
     render(
       <ChakraProvider>
         <MemoryRouter>
-          <Footer />
+          <ContentProvider value={{ navigation: [], page: null, loading: false, error: null }}><Footer /></ContentProvider>
         </MemoryRouter>
       </ChakraProvider>,
     );
